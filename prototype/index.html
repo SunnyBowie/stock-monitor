@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stock Monitor 原型</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #65758b;
+      --line: #d9e1ec;
+      --accent: #2364aa;
+      --accent-2: #0f8b8d;
+      --danger: #c0392b;
+      --up: #d53f2a;
+      --down: #168750;
+      --soft: #eef4fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr 320px;
+      min-height: 100vh;
+    }
+    aside, main, .right {
+      padding: 18px;
+    }
+    aside {
+      background: #0f1d2f;
+      color: #f7fbff;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .brand h1 {
+      font-size: 20px;
+      margin: 0;
+      letter-spacing: 0;
+    }
+    .status {
+      font-size: 12px;
+      color: #b6c7dc;
+    }
+    .add {
+      display: grid;
+      grid-template-columns: 1fr 1fr 42px;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    input, button, select {
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+    }
+    input, select {
+      padding: 0 10px;
+      background: #fff;
+    }
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .watchlist {
+      display: grid;
+      gap: 8px;
+    }
+    .stock-row {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: left;
+    }
+    .stock-row.active {
+      background: #ffffff;
+      color: #102033;
+      border-color: #ffffff;
+    }
+    .code, .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    aside .code { color: #b8c8dc; }
+    .stock-row.active .code { color: var(--muted); }
+    .price {
+      font-weight: 700;
+      text-align: right;
+    }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    main {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 16px;
+    }
+    .toolbar, .metrics, .chart-panel, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .toolbar h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .ghost {
+      background: #fff;
+      color: var(--accent);
+      border-color: var(--line);
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(90px, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      background: var(--soft);
+      border-radius: 6px;
+      padding: 10px;
+      min-height: 70px;
+    }
+    .metric label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .metric strong {
+      font-size: 18px;
+    }
+    .chart-panel {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 360px;
+    }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .tab {
+      background: #fff;
+      color: var(--ink);
+      border-color: var(--line);
+      min-width: 72px;
+    }
+    .tab.active {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #fff;
+    }
+    canvas {
+      width: 100%;
+      height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(#ffffff, #f8fbff);
+    }
+    .right {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+    .form {
+      display: grid;
+      gap: 10px;
+    }
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .alert-list {
+      display: grid;
+      gap: 8px;
+    }
+    .alert {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfe;
+      font-size: 13px;
+    }
+    .toast {
+      border-left: 4px solid var(--danger);
+      background: #fff4f2;
+      color: #6f1d16;
+    }
+    .mapping {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 260px 1fr; }
+      .right { grid-column: 1 / -1; grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .app { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .right { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <h1>Stock Monitor</h1>
+        <span class="status" id="refreshStatus">实时刷新中</span>
+      </div>
+      <div class="add" aria-label="添加自选股">
+        <input id="newCode" placeholder="代码">
+        <input id="newName" placeholder="名称">
+        <button id="addBtn" title="添加自选股">+</button>
+      </div>
+      <div class="watchlist" id="watchlist"></div>
+    </aside>
+
+    <main>
+      <section class="toolbar">
+        <div>
+          <h2 id="stockTitle">贵州茅台</h2>
+          <div class="muted" id="stockMeta">600519 · 自选股详情</div>
+        </div>
+        <div class="actions">
+          <button class="ghost" id="refreshBtn">刷新</button>
+          <button class="ghost" id="deleteBtn">删除自选</button>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="实时行情指标">
+        <div class="metric"><label>现价</label><strong id="mPrice">--</strong></div>
+        <div class="metric"><label>涨跌幅</label><strong id="mPct">--</strong></div>
+        <div class="metric"><label>今开</label><strong id="mOpen">--</strong></div>
+        <div class="metric"><label>最高</label><strong id="mHigh">--</strong></div>
+        <div class="metric"><label>最低</label><strong id="mLow">--</strong></div>
+        <div class="metric"><label>成交额</label><strong id="mAmount">--</strong></div>
+      </section>
+
+      <section class="chart-panel">
+        <div class="tabs" role="tablist">
+          <button class="tab active" id="minuteTab">分时</button>
+          <button class="tab" id="dailyTab">日 K</button>
+        </div>
+        <canvas id="chart" width="980" height="320" aria-label="行情折线图"></canvas>
+      </section>
+    </main>
+
+    <section class="right">
+      <div class="panel">
+        <h3>价格提醒</h3>
+        <div class="form">
+          <div class="field">
+            <label for="ruleType">提醒类型</label>
+            <select id="ruleType">
+              <option value="abovePct">涨超百分比</option>
+              <option value="belowPct">跌超百分比</option>
+              <option value="abovePrice">涨过指定价</option>
+              <option value="belowPrice">跌破指定价</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ruleValue">阈值</label>
+            <input id="ruleValue" value="3">
+          </div>
+          <button id="saveRule">保存提醒</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>提醒列表</h3>
+        <div class="alert-list" id="alerts"></div>
+      </div>
+
+      <div class="panel">
+        <h3>原型说明</h3>
+        <div class="mapping">
+          左侧自选股对应 UC-01；顶部行情与指标对应 UC-02/UC-03；中部折线图对应 UC-04/UC-05；右侧提醒设置和提示对应 UC-06。当前数据为可离线演示的模拟行情，工程实现时替换为行情适配器。
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const stocks = [
+      { code: "600519", name: "贵州茅台", price: 1668.20, pct: 1.24, open: 1645.00, high: 1675.80, low: 1638.40, volume: "2.1万手", amount: "35.2亿" },
+      { code: "000001", name: "平安银行", price: 10.84, pct: -0.55, open: 10.91, high: 10.96, low: 10.76, volume: "78.4万手", amount: "8.5亿" },
+      { code: "300750", name: "宁德时代", price: 212.36, pct: 2.08, open: 207.10, high: 213.90, low: 206.88, volume: "31.7万手", amount: "66.4亿" },
+      { code: "600036", name: "招商银行", price: 38.42, pct: 0.36, open: 38.18, high: 38.66, low: 37.92, volume: "54.9万手", amount: "21.1亿" }
+    ];
+    let selected = 0;
+    let chartMode = "minute";
+    const rules = [];
+    const randomSeries = (base, count, range) => Array.from({ length: count }, (_, i) => {
+      const wave = Math.sin(i / 4) * range * 0.45;
+      const drift = (Math.random() - 0.5) * range;
+      return +(base + wave + drift).toFixed(2);
+    });
+
+    function cls(pct) { return pct >= 0 ? "up" : "down"; }
+    function renderWatchlist() {
+      const box = document.getElementById("watchlist");
+      box.innerHTML = "";
+      stocks.forEach((s, i) => {
+        const row = document.createElement("button");
+        row.className = "stock-row" + (i === selected ? " active" : "");
+        row.innerHTML = `<span><strong>${s.name}</strong><br><span class="code">${s.code}</span></span><span class="price ${cls(s.pct)}">${s.price.toFixed(2)}<br>${s.pct.toFixed(2)}%</span>`;
+        row.onclick = () => { selected = i; render(); };
+        box.appendChild(row);
+      });
+    }
+    function renderMetrics() {
+      const s = stocks[selected];
+      document.getElementById("stockTitle").textContent = s.name;
+      document.getElementById("stockMeta").textContent = `${s.code} · 自选股详情`;
+      document.getElementById("mPrice").textContent = s.price.toFixed(2);
+      document.getElementById("mPrice").className = cls(s.pct);
+      document.getElementById("mPct").textContent = `${s.pct.toFixed(2)}%`;
+      document.getElementById("mPct").className = cls(s.pct);
+      document.getElementById("mOpen").textContent = s.open.toFixed(2);
+      document.getElementById("mHigh").textContent = s.high.toFixed(2);
+      document.getElementById("mLow").textContent = s.low.toFixed(2);
+      document.getElementById("mAmount").textContent = s.amount;
+    }
+    function drawChart() {
+      const s = stocks[selected];
+      const canvas = document.getElementById("chart");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const data = chartMode === "minute" ? randomSeries(s.price, 36, s.price * 0.012) : randomSeries(s.price * 0.94, 30, s.price * 0.035);
+      const pad = 36;
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      ctx.strokeStyle = "#d9e1ec";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 5; i++) {
+        const y = pad + i * ((canvas.height - pad * 2) / 4);
+        ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(canvas.width - pad, y); ctx.stroke();
+      }
+      ctx.strokeStyle = chartMode === "minute" ? "#2364aa" : "#0f8b8d";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      data.forEach((v, i) => {
+        const x = pad + i * ((canvas.width - pad * 2) / (data.length - 1));
+        const y = canvas.height - pad - ((v - min) / (max - min || 1)) * (canvas.height - pad * 2);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.fillStyle = "#65758b";
+      ctx.font = "14px Microsoft YaHei";
+      ctx.fillText(`${chartMode === "minute" ? "简化分时图" : "日 K 收盘价趋势"}  最高 ${max.toFixed(2)} / 最低 ${min.toFixed(2)}`, pad, 24);
+    }
+    function renderAlerts() {
+      const box = document.getElementById("alerts");
+      box.innerHTML = "";
+      if (!rules.length) {
+        box.innerHTML = '<div class="alert">暂无提醒规则</div>';
+        return;
+      }
+      rules.forEach((r) => {
+        const div = document.createElement("div");
+        div.className = "alert" + (r.hit ? " toast" : "");
+        div.textContent = `${r.stock}：${r.text}${r.hit ? "，已触发文字提示" : ""}`;
+        box.appendChild(div);
+      });
+    }
+    function tick() {
+      stocks.forEach(s => {
+        const delta = (Math.random() - 0.48) * s.price * 0.004;
+        s.price = Math.max(1, s.price + delta);
+        s.pct = ((s.price - s.open) / s.open) * 100;
+        s.high = Math.max(s.high, s.price);
+        s.low = Math.min(s.low, s.price);
+      });
+      rules.forEach(r => {
+        const s = stocks.find(x => x.code === r.code);
+        if (!s) return;
+        r.hit = (r.type === "abovePct" && s.pct >= r.value) ||
+          (r.type === "belowPct" && s.pct <= -r.value) ||
+          (r.type === "abovePrice" && s.price >= r.value) ||
+          (r.type === "belowPrice" && s.price <= r.value);
+      });
+      document.getElementById("refreshStatus").textContent = `已刷新 ${new Date().toLocaleTimeString()}`;
+      render();
+    }
+    function render() { renderWatchlist(); renderMetrics(); drawChart(); renderAlerts(); }
+    document.getElementById("addBtn").onclick = () => {
+      const code = document.getElementById("newCode").value.trim() || "688001";
+      const name = document.getElementById("newName").value.trim() || "新股票";
+      stocks.push({ code, name, price: 28.88, pct: 0, open: 28.88, high: 28.88, low: 28.88, volume: "0手", amount: "0万" });
+      selected = stocks.length - 1;
+      render();
+    };
+    document.getElementById("deleteBtn").onclick = () => {
+      if (stocks.length > 1) {
+        stocks.splice(selected, 1);
+        selected = Math.max(0, selected - 1);
+        render();
+      }
+    };
+    document.getElementById("refreshBtn").onclick = tick;
+    document.getElementById("minuteTab").onclick = () => { chartMode = "minute"; document.getElementById("minuteTab").classList.add("active"); document.getElementById("dailyTab").classList.remove("active"); drawChart(); };
+    document.getElementById("dailyTab").onclick = () => { chartMode = "daily"; document.getElementById("dailyTab").classList.add("active"); document.getElementById("minuteTab").classList.remove("active"); drawChart(); };
+    document.getElementById("saveRule").onclick = () => {
+      const s = stocks[selected];
+      const type = document.getElementById("ruleType").value;
+      const value = parseFloat(document.getElementById("ruleValue").value || "0");
+      const names = { abovePct: "涨超", belowPct: "跌超", abovePrice: "涨过", belowPrice: "跌破" };
+      const unit = type.includes("Pct") ? "%" : "元";
+      rules.push({ code: s.code, stock: s.name, type, value, text: `${names[type]} ${value}${unit}`, hit: false });
+      renderAlerts();
+    };
+    render();
+    setInterval(tick, 8000);
+  </script>
+</body>
+</html>

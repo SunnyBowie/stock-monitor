@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+
+actor "个人投资者/商科学生" as Investor
+actor "行情数据源\n(AKShare/东方财富/新浪)" as MarketData
+actor "Windows 通知服务" as Notify
+
+rectangle "Stock Monitor Windows 端股票盯盘软件" {
+  usecase "管理自选股" as UC1
+  usecase "查看自选股实时行情" as UC2
+  usecase "查看单只股票详情" as UC3
+  usecase "查看分时图" as UC4
+  usecase "查看日 K 趋势图" as UC5
+  usecase "设置价格/涨跌幅提醒" as UC6
+  usecase "触发提醒通知" as UC7
+  usecase "维护本地持仓备注" as UC8
+}
+
+Investor --> UC1
+Investor --> UC2
+Investor --> UC3
+Investor --> UC4
+Investor --> UC5
+Investor --> UC6
+Investor --> UC8
+MarketData --> UC2
+MarketData --> UC3
+MarketData --> UC4
+MarketData --> UC5
+UC6 --> UC7 : <<include>>
+UC2 --> UC7 : <<extend>>
+Notify <-- UC7
+@enduml
