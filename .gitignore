@@ -1,0 +1,36 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+.git.local-backup/
+
+# Python caches and packaging output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Local application data
+*.db
+*.sqlite
+*.sqlite3
+
+# Java / Maven output
+target/
+*.class
+
+# Bundled local Maven runtime, keep scripts but not downloaded tool binaries
+hw2/tools/apache-maven-3.9.11/
+hw2/tools/apache-maven-3.9.11-bin.zip
+
+# Generated desktop binaries
+*.exe
+*.dll
+*.pyd
+*.pkg
+*.pyz
+*.toc

@@ -1,0 +1,45 @@
+@startuml
+skinparam classAttributeIconSize 0
+package domain {
+  class Stock
+  class MarketQuote
+  class MarketPage
+  class FinancialReport
+  class QuarterValue
+  class IntradayPoint
+  class Candle
+  class OrderBook
+}
+package application {
+  class WatchlistService
+  class MarketUniverseService
+  class QuoteRefreshService
+  interface MarketDataProvider
+}
+package infrastructure {
+  class EastMoneyMarketDataProvider
+  class MockMarketDataProvider
+}
+package ui {
+  class StockMonitorApp
+  class MainController
+  enum ChartMode
+}
+
+MarketQuote --> Stock
+MarketQuote --> OrderBook
+MarketQuote --> FinancialReport
+MarketPage --> MarketQuote
+FinancialReport --> QuarterValue
+MarketUniverseService --> MarketDataProvider
+QuoteRefreshService --> MarketDataProvider
+WatchlistService --> Stock
+EastMoneyMarketDataProvider ..|> MarketDataProvider
+MockMarketDataProvider ..|> MarketDataProvider
+MarketDataProvider --> MarketQuote
+MarketDataProvider --> MarketPage
+StockMonitorApp --> WatchlistService
+StockMonitorApp --> MarketUniverseService
+StockMonitorApp --> MainController
+MainController --> ChartMode
+@enduml

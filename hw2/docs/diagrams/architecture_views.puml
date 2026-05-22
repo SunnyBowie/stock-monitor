@@ -1,0 +1,48 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+package "UI Layer" {
+  [JavaFX StockMonitorApp]
+  [MainController]
+  [Canvas Charts]
+}
+
+package "Application Layer" {
+  [MarketUniverseService]
+  [WatchlistService]
+  [QuoteRefreshService]
+}
+
+package "Domain Layer" {
+  [Stock]
+  [MarketQuote]
+  [MarketPage]
+  [FinancialReport]
+  [IntradayPoint]
+  [Candle]
+}
+
+package "Infrastructure Layer" {
+  [EastMoneyMarketDataProvider]
+  [MockMarketDataProvider]
+}
+
+cloud "EastMoney push2\nQuote / Clist / Trends / Kline" as QuoteAPI
+cloud "EastMoney Datacenter\nF10 reports" as ReportAPI
+
+[JavaFX StockMonitorApp] --> [MainController]
+[MainController] --> [MarketUniverseService]
+[MainController] --> [WatchlistService]
+[MainController] --> [QuoteRefreshService]
+[MainController] --> [Canvas Charts]
+[WatchlistService] --> [Stock]
+[MarketUniverseService] --> [MarketPage]
+[MarketUniverseService] --> [MarketQuote]
+[QuoteRefreshService] --> [MarketQuote]
+[EastMoneyMarketDataProvider] ..|> [MockMarketDataProvider]
+[MarketUniverseService] --> [EastMoneyMarketDataProvider]
+[QuoteRefreshService] --> [EastMoneyMarketDataProvider]
+[EastMoneyMarketDataProvider] --> QuoteAPI
+[EastMoneyMarketDataProvider] --> ReportAPI
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+actor User as 用户
+boundary UI as "JavaFX MainController"
+control Universe as "MarketUniverseService"
+control Refresh as "QuoteRefreshService"
+interface Provider as "EastMoneyMarketDataProvider"
+entity Quote as "MarketQuote"
+entity Report as "FinancialReport"
+
+用户 -> UI : 打开个股详情
+UI -> Refresh : refresh(selectedStock)
+Refresh -> Provider : quote(stock)
+Provider -> Provider : stock/get + ulist.np/get
+Provider -> Provider : F10 利润表/资产负债表/现金流
+Provider --> Refresh : MarketQuote + FinancialReport
+Refresh --> UI : quote
+UI -> Provider : intraday(stock)
+Provider --> UI : 241 个分时点
+UI -> Provider : candles(stock, 80)
+Provider --> UI : K 线序列
+UI --> 用户 : 展示价格、分时/K线、盘口、财务摘要
+@enduml

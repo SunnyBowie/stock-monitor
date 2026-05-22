@@ -1,0 +1,30 @@
+@startuml
+skinparam classAttributeIconSize 0
+class "QuoteRefresh VOPC" as VOPC
+class StockMonitorApp <<JavaFX boundary>>
+class MainController <<control>>
+class MarketUniverseService <<control>>
+class QuoteRefreshService <<control>>
+class MarketDataProvider <<interface>>
+class EastMoneyMarketDataProvider <<adapter>>
+class MarketQuote <<entity>>
+class MarketPage <<entity>>
+class FinancialReport <<entity>>
+
+VOPC o-- StockMonitorApp
+VOPC o-- MainController
+VOPC o-- MarketUniverseService
+VOPC o-- QuoteRefreshService
+VOPC o-- MarketDataProvider
+VOPC o-- MarketQuote
+VOPC o-- MarketPage
+MarketDataProvider <|.. EastMoneyMarketDataProvider
+MarketUniverseService --> MarketDataProvider
+MarketUniverseService --> MarketPage
+QuoteRefreshService --> MarketDataProvider
+QuoteRefreshService --> MarketQuote
+MarketQuote --> FinancialReport
+StockMonitorApp --> MainController
+MainController --> MarketUniverseService
+MainController --> QuoteRefreshService
+@enduml

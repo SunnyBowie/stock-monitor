@@ -1,0 +1,150 @@
+:root {
+  --bg: #eef3f7;
+  --panel: #ffffff;
+  --ink: #142033;
+  --muted: #697789;
+  --line: #d9e1ea;
+  --brand: #105a8b;
+  --brand2: #0d9488;
+  --up: #d6422b;
+  --down: #148550;
+  --soft: #f3f7fb;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+.shell { padding: 18px; min-height: 100vh; }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #0f4c75, #137b8f);
+  color: #fff;
+  border-radius: 8px;
+}
+.eyebrow { font-size: 13px; opacity: .84; }
+h1, h2 { margin: 0; letter-spacing: 0; }
+h1 { font-size: 30px; }
+h2 { font-size: 18px; }
+.top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+input, select, button {
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  font: inherit;
+}
+input, select { padding: 0 10px; background: #fff; min-width: 0; }
+button {
+  padding: 0 14px;
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  cursor: pointer;
+  font-weight: 700;
+}
+button:hover { filter: brightness(.96); }
+.status {
+  margin: 12px 0;
+  min-height: 32px;
+  padding: 8px 12px;
+  border-left: 4px solid var(--brand2);
+  background: #fff;
+  border-radius: 6px;
+  color: var(--muted);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 14px;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.panel-head span, #stockMeta { color: var(--muted); font-size: 13px; }
+.add-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; }
+.watchlist, .alerts { display: grid; gap: 8px; margin-top: 12px; }
+.stock-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fbfdff;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+.stock-card.active { outline: 2px solid var(--brand2); background: #f0fbfa; }
+.code { color: var(--muted); font-size: 12px; }
+.price { text-align: right; font-weight: 800; }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 10px;
+}
+.metrics div {
+  background: var(--soft);
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 68px;
+}
+.metrics label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.metrics strong { font-size: 20px; }
+.tabs { display: flex; gap: 8px; margin: 14px 0 10px; }
+.tabs button { background: #fff; color: var(--ink); border-color: var(--line); }
+.tabs button.active { background: var(--brand2); color: #fff; border-color: var(--brand2); }
+canvas {
+  width: 100%;
+  height: 280px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(#fff, #f8fbfd);
+}
+.alert-panel { display: grid; align-content: start; gap: 8px; }
+.alert-item {
+  padding: 9px;
+  border-radius: 6px;
+  background: #fff8f2;
+  border: 1px solid #f2d6bd;
+  color: #7a3b00;
+}
+.market-panel { margin-top: 14px; }
+.market-table-wrap { overflow: auto; max-height: 360px; border: 1px solid var(--line); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: #edf4fa; z-index: 1; }
+td:last-child { text-align: right; }
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(110px, 1fr)); }
+  .topbar { align-items: stretch; flex-direction: column; }
+  .top-actions { justify-content: flex-start; }
+}
